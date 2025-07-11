@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Phishing Email Detector</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    textarea {
+      width: 100%;
+      height: 160px;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      border-left: 6px solid gray;
+      background: white;
+      border-radius: 5px;
+    }
+
+    .low-risk {
+      border-left-color: green;
+      color: green;
+    }
+
+    .medium-risk {
+      border-left-color: orange;
+      color: orange;
+    }
+
+    .high-risk {
+      border-left-color: red;
+      color: red;
+    }
+
+    .highlight {
+      background-color: yellow;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Phishing Email Detector</h2>
+
+<textarea id="emailText" placeholder="Paste your email content here..."></textarea>
+<br>
+<button onclick="detectPhishing()">Analyze Email</button>
+
+<div id="result"></div>
+
+<script>
+  const redFlags = [
+    "verify your account",
+    "account suspended",
+    "update your password",
+    "click here",
+    "immediate action",
+    "billing information",
+    "login now",
+    "suspicious activity",
+    "confirm your identity",
+    "reactivate your account",
+    "validate your billing",
+    "security alert"
+  ];
+
+  function detectPhishing() {
+    const input = document.getElementById("emailText").value.toLowerCase();
+    let flagged = 0;
+    let highlightedText = input;
+
+    redFlags.forEach(term => {
+      if (input.includes(term)) {
+        flagged++;
+        const reg = new RegExp(term, "gi");
+        highlightedText = highlightedText.replace(reg, `<span class="highlight">${term}</span>`);
+      }
+    });
+
+    let risk = "low-risk";
+    let message = "✅ Low Risk: No major red flags found.";
+
+    if (flagged >= 5) {
+      risk = "high-risk";
+      message = "🚨 High Risk: Multiple phishing signs detected!";
+    } else if (flagged >= 2) {
+      risk = "medium-risk";
+      message = "⚠️ Medium Risk: Some suspicious terms found.";
+    }
+
+    document.getElementById("result").className = risk;
+    document.getElementById("result").innerHTML = `
+      <p><strong>${message}</strong></p>
+      <p><strong>Red Flags Found:</strong> ${flagged}</p>
+      <p>${highlightedText}</p>
+    `;
+  }
+</script>
+
+</body>
+</html>
